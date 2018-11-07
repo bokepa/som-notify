@@ -8,13 +8,14 @@ som-notify is a little application that notifies you when:
 * New contract is made with Som Energia
 * Some news are updated from wakelet generation plants news.
 
-## ToDO
+## ToDo
 
-- Server mode, detecting new values
+- Detect new values on a simple while loop
 - When value, alert to console
+- When change, notify thorugh module
 - Settings
- - Delay (in secs)
- - Outputs
+- Time Delay config (in secs)
+- Outputs
 	- Macos Notification
 	- Twitter
 	- Send Mail
