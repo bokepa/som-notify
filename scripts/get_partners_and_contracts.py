@@ -8,7 +8,9 @@ from plyer import notification
 
 # Init
 socis = '0'
+socis_new = '0'
 contractes = '0'
+contractes_new='0'
 url_socis = "https://api.somenergia.coop/stats/socis"
 sleep_time = 300
 
@@ -23,6 +25,7 @@ def doNotify(text):
 
 def getSocis():
 	url = "https://api.somenergia.coop/stats/socis"
+	
 	response = urlopen(url)
 	data = response.read()
 	j = json.loads(data.decode('utf-8'))
@@ -41,9 +44,11 @@ def getContractes():
 
 while True:
 	# socis
-	
-	socis_new = getSocis()
-	contractes_new = getContractes()
+	try:
+		socis_new = getSocis()
+		contractes_new = getContractes()
+	except Exception:
+		print ("Oops. Some error retrieving data... (connection down?) I'll try again in the next minutes.")
 	
 	if (socis < socis_new or contractes < contractes_new):
 		now = datetime.datetime.now()
