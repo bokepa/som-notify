@@ -1,8 +1,9 @@
 import json
-from urllib2 import urlopen
+#from urllib2 import urlopen
+from urllib.request import urlopen
 import datetime
 import time
-
+from plyer import notification
 
 
 # Init
@@ -11,11 +12,21 @@ contractes = '0'
 url_socis = "https://api.somenergia.coop/stats/socis"
 sleep_time = 300
 
+def doNotify(text):
+
+    notification.notify(
+        title='Nou soci!',
+        message=text,
+        app_name='Som Notify',
+        app_icon='icon.ico'
+)
+
 def getSocis():
 	url = "https://api.somenergia.coop/stats/socis"
 	response = urlopen(url)
 	data = response.read()
-	j = json.loads(data)
+	j = json.loads(data.decode('utf-8'))
+	#j = json.loads(data)
 	ret = str(j['data']['socis']);
 	return ret
 
@@ -23,7 +34,8 @@ def getContractes():
 	url = "https://api.somenergia.coop/stats/contractes"
 	response = urlopen(url)
 	data = response.read()
-	j = json.loads(data)
+	j = json.loads(data.decode('utf-8'))
+	#j = json.loads(data)
 	ret = str(j['data']['contractes']);
 	return ret
 
@@ -40,9 +52,9 @@ while True:
 		contractes_add = int(contractes_new) - int(contractes)
 		socis = socis_new
 		contractes = contractes_new
-		
-		print (fecha+";"+socis +";"+contractes+";"+str(socis_add)+";"+str(contractes_add))
-
+		text = fecha+";"+socis +";"+contractes+";"+str(socis_add)+";"+str(contractes_add)
+		print (text)
+		doNotify("Socis: +"+str(socis_add)+ " Contractes: +"+str(contractes_add))
 	# come back in a minute!
 	time.sleep(sleep_time)
 
