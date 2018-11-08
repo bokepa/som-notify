@@ -9,7 +9,7 @@ import time
 socis = '0'
 contractes = '0'
 url_socis = "https://api.somenergia.coop/stats/socis"
-
+sleep_time = 300
 
 def getSocis():
 	url = "https://api.somenergia.coop/stats/socis"
@@ -36,12 +36,15 @@ while True:
 	if (socis < socis_new or contractes < contractes_new):
 		now = datetime.datetime.now()
 		fecha =  str(now.year) +"-"+ str(now.month) +"-"+ str(now.day) +" "+str(now.hour)+":"+str(now.minute);
+		socis_add = int(socis_new) - int(socis)
+		contractes_add = int(contractes_new) - int(contractes)
 		socis = socis_new
 		contractes = contractes_new
-		print (fecha+";"+socis +";"+contractes_new)
+		
+		print (fecha+";"+socis +";"+contractes+";"+str(socis_add)+";"+str(contractes_add))
 
 	# come back in a minute!
-	time.sleep(60)
+	time.sleep(sleep_time)
 
 
 # contractes
