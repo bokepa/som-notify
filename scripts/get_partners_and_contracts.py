@@ -11,56 +11,74 @@ socis = '0'
 socis_new = '0'
 contractes = '0'
 contractes_new='0'
-url_socis = "https://api.somenergia.coop/stats/socis"
+url_api_stats = "https://api.somenergia.coop/stats/"
+# notify constants
+app_name = 'Som Notify'
+icon_notify = 'icon.ico'
+
+# main config
 sleep_time = 300
 
-def doNotify(text):
 
+def doNotify(msgtext, msgtitle):
     notification.notify(
-        title='Nou soci!',
-        message=text,
-        app_name='Som Notify',
-        app_icon='icon.ico'
+        title = msgtitle,
+        message = msgtext,
+        app_name = app_name,
+        app_icon = icon_notify
 )
 
-def getSocis():
-	url = "https://api.somenergia.coop/stats/socis"
-	
+def callApi(op):
+	url = url_api_stats + op
 	response = urlopen(url)
 	data = response.read()
 	j = json.loads(data.decode('utf-8'))
-	#j = json.loads(data)
-	ret = str(j['data']['socis']);
-	return ret
+	ret = str(j['data'][op]);
+	return  ret
+	
+def getSocis():
+	return callApi("socis")
 
 def getContractes():
-	url = "https://api.somenergia.coop/stats/contractes"
-	response = urlopen(url)
-	data = response.read()
-	j = json.loads(data.decode('utf-8'))
-	#j = json.loads(data)
-	ret = str(j['data']['contractes']);
-	return ret
+	return callApi("contractes")
 
-while True:
-	# socis
+def socisHandler():
+	global socis
+	global socis_new
 	try:
 		socis_new = getSocis()
-		contractes_new = getContractes()
 	except Exception:
 		print ("Oops. Some error retrieving data... (connection down?) I'll try again in the next minutes.")
-	
-	if (socis < socis_new or contractes < contractes_new):
+	if (socis < socis_new):
 		now = datetime.datetime.now()
 		fecha =  str(now.year) +"-"+ str(now.month) +"-"+ str(now.day) +" "+str(now.hour)+":"+str(now.minute);
 		socis_add = int(socis_new) - int(socis)
-		contractes_add = int(contractes_new) - int(contractes)
 		socis = socis_new
-		contractes = contractes_new
-		text = fecha+";"+socis +";"+contractes+";"+str(socis_add)+";"+str(contractes_add)
+		text = "SOCI;"+fecha+";"+socis +";"+str(socis_add)+";"
 		print (text)
-		doNotify("Socis: +"+str(socis_add)+ " Contractes: +"+str(contractes_add))
-	# come back in a minute!
+		doNotify("Socis nous: +"+str(socis_add)+ " Socis total: "+socis, 'Nou soci!')
+		time.sleep(5)
+
+
+def contractesHandler():
+	global contractes
+	global contractes_new
+	try:
+		contractes_new = getContractes()
+	except Exception:
+		print ("Oops. Some error retrieving data... (connection down?) I'll try again in the next minutes.")
+	if (contractes < contractes_new):
+		now = datetime.datetime.now()
+		fecha =  str(now.year) +"-"+ str(now.month) +"-"+ str(now.day) +" "+str(now.hour)+":"+str(now.minute);
+		contractes_add = int(contractes_new) - int(contractes)
+		contractes = contractes_new
+		text = "CONTRACTES;"+fecha+";"+contractes +";"+str(contractes_add)+";"
+		print (text)
+		doNotify("Contractes nous: +"+str(contractes_add)+ " Contractes total: "+contractes, 'Nou contracte!')		
+while True:
+
+	socisHandler()
+	contractesHandler()
 	time.sleep(sleep_time)
 
 
