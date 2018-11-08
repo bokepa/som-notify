@@ -1,9 +1,19 @@
 import json
-#from urllib2 import urlopen
-from urllib.request import urlopen
+import sys
+#if sys.version_info > (2, 7):
+#    import simplejson as json
+#else:
+#    import json
+from urllib2 import urlopen # works ok with 2.7.9 on rasp
+#from urllib.request import urlopen ## works ok with 
+
 import datetime
 import time
 from plyer import notification
+
+import re
+
+import urllib2
 
 
 # Init
@@ -12,12 +22,16 @@ socis_new = '0'
 contractes = '0'
 contractes_new='0'
 url_api_stats = "https://api.somenergia.coop/stats/"
+
 # notify constants
 app_name = 'Som Notify'
 icon_notify = 'icon.ico'
 
 # main config
 sleep_time = 300
+
+# blog scrap config
+URLBASE_BLOG = 'https://blog.somenergia.coop/'
 
 
 def doNotify(msgtext, msgtitle):
@@ -75,11 +89,34 @@ def contractesHandler():
 		text = "CONTRACTES;"+fecha+";"+contractes +";"+str(contractes_add)+";"
 		print (text)
 		doNotify("Contractes nous: +"+str(contractes_add)+ " Contractes total: "+contractes, 'Nou contracte!')		
+
+def blogNewsHandler():
+        print ("Checking posts...")
+        now = datetime.datetime.now()
+        url = URLBASE_BLOG + str(now.year) + "/"+str(now.month)+"/"+str(now.day)
+        opener = urllib2.build_opener()
+        opener.addheaders = [('User-agent', 'Mozilla/5.0')]
+        response = opener.open(url)
+        html_contents = response.read()
+        print (html_contents)
+
+        import BeautifulSoup
+        print ("Now we put in a soup")
+        soup = BeautifulSoup.BeautifulSoup(html_contents)
+
+        print("Cercant bloque...")
+        bar = soup.find('div', attrs={'class': 'entry'})
+        print(bar.text)
+ 
+        print ("Printing bnoque")
+       
+
 while True:
 
-	socisHandler()
-	contractesHandler()
-	time.sleep(sleep_time)
+    socisHandler()
+    contractesHandler()
+    blogNewsHandler()   
+    time.sleep(sleep_time)
 
 
 # contractes
