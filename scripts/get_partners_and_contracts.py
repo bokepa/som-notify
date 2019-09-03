@@ -1,37 +1,33 @@
 import json
 import sys
-#if sys.version_info > (2, 7):
-#    import simplejson as json
-#else:
-#    import json
-from urllib2 import urlopen # works ok with 2.7.9 on rasp
-#from urllib.request import urlopen ## works ok with 
-
 import datetime
 import time
 from plyer import notification
-
+import requests
 import re
-
-import urllib2
-
+import logging
 
 # Init
 socis = '0'
 socis_new = '0'
 contractes = '0'
 contractes_new='0'
-url_api_stats = "https://api.somenergia.coop/stats/"
 
 # notify constants
 app_name = 'Som Notify'
 icon_notify = 'icon.ico'
 
 # main config
-sleep_time = 300
+SLEEP_TIME = 300
 
 # blog scrap config
 URLBASE_BLOG = 'https://blog.somenergia.coop/'
+
+# API OPERATIONS
+OP_CONTRACTS = "contractes"
+OP_PARTNERS  = "socis"
+JSON_DATA_FIELD   = "data"
+URL_API_STATS = "https://api.somenergia.coop/stats/"
 
 
 def doNotify(msgtext, msgtitle):
@@ -42,27 +38,29 @@ def doNotify(msgtext, msgtitle):
         app_icon = icon_notify
 )
 
+# makes the url and retorn data value, depending operation
 def callApi(op):
-	url = url_api_stats + op
-	response = urlopen(url)
-	data = response.read()
-	j = json.loads(data.decode('utf-8'))
-	ret = str(j['data'][op]);
+	url = URL_API_STATS + op
+	response = requests.get(url)
+	j = response.json()
+	ret = str(j[JSON_DATA_FIELD][op]);
 	return  ret
 	
 def getSocis():
-	return callApi("socis")
+	return callApi(OP_PARTNERS)
 
 def getContractes():
-	return callApi("contractes")
+	return callApi(OP_CONTRACTS)
 
 def socisHandler():
-	global socis
+	global socis 
 	global socis_new
+	
 	try:
 		socis_new = getSocis()
 	except Exception:
 		print ("Oops. Some error retrieving data... (connection down?) I'll try again in the next minutes.")
+	
 	if (socis < socis_new):
 		now = datetime.datetime.now()
 		fecha =  str(now.year) +"-"+ str(now.month) +"-"+ str(now.day) +" "+str(now.hour)+":"+str(now.minute);
@@ -70,7 +68,8 @@ def socisHandler():
 		socis = socis_new
 		text = "SOCI;"+fecha+";"+socis +";"+str(socis_add)+";"
 		print (text)
-		doNotify("Socis nous: +"+str(socis_add)+ " Socis total: "+socis, 'Nou soci!')
+		if (socis_add != socis):
+			doNotify("Socis nous: +"+str(socis_add)+ " Socis total: "+socis, 'Nou soci!')
 		time.sleep(5)
 
 
@@ -88,13 +87,14 @@ def contractesHandler():
 		contractes = contractes_new
 		text = "CONTRACTES;"+fecha+";"+contractes +";"+str(contractes_add)+";"
 		print (text)
-		doNotify("Contractes nous: +"+str(contractes_add)+ " Contractes total: "+contractes, 'Nou contracte!')		
+		if (contractes_add != contractes):
+			doNotify("Contractes nous: +"+str(contractes_add)+ " Contractes total: "+contractes, 'Nou contracte!')		
 
 def blogNewsHandler():
         print ("Checking posts...")
         now = datetime.datetime.now()
         url = URLBASE_BLOG + str(now.year) + "/"+str(now.month)+"/"+str(now.day)
-        opener = urllib2.build_opener()
+        opener = urllib.build_opener()
         opener.addheaders = [('User-agent', 'Mozilla/5.0')]
         response = opener.open(url)
         html_contents = response.read()
@@ -112,22 +112,13 @@ def blogNewsHandler():
        
 
 while True:
-
+	# main. keep pulling 
+	
     socisHandler()
     contractesHandler()
-    blogNewsHandler()   
-    time.sleep(sleep_time)
+   #blogNewsHandler()   
+    time.sleep(SLEEP_TIME)
 
-
-# contractes
-#url = "https://api.somenergia.coop/stats/contractes"
-#response = urlopen(url)
-#data = response.read()
-#encoding = response.info().get_content_charset('utf-8')
-#j = json.loads(data.decode(encoding))
-#contractes = str(j['data']['contractes']);
-
-# datetime
 
 
 
