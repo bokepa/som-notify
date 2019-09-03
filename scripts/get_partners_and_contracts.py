@@ -15,7 +15,7 @@ contractes_new='0'
 
 # notify constants
 app_name = 'Som Notify'
-icon_notify = 'icon.ico'
+icon_notify = 'somenergia_icon_K2f_icon.ico'
 
 # main config
 SLEEP_TIME = 300
@@ -68,8 +68,8 @@ def socisHandler():
 		socis = socis_new
 		text = "SOCI;"+fecha+";"+socis +";"+str(socis_add)+";"
 		print (text)
-		if (socis_add != socis):
-			doNotify("Socis nous: +"+str(socis_add)+ " Socis total: "+socis, 'Nou soci!')
+		
+		doNotify("Socis nous: +"+str(socis_add)+ " Socis total: "+socis, 'Nou soci!')
 		time.sleep(5)
 
 
@@ -87,8 +87,8 @@ def contractesHandler():
 		contractes = contractes_new
 		text = "CONTRACTES;"+fecha+";"+contractes +";"+str(contractes_add)+";"
 		print (text)
-		if (contractes_add != contractes):
-			doNotify("Contractes nous: +"+str(contractes_add)+ " Contractes total: "+contractes, 'Nou contracte!')		
+		
+		doNotify("Contractes nous: +"+str(contractes_add)+ " Contractes total: "+contractes, 'Nou contracte!')		
 
 def blogNewsHandler():
         print ("Checking posts...")
