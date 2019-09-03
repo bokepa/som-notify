@@ -15,7 +15,7 @@ contractes_new='0'
 
 # notify constants
 app_name = 'Som Notify'
-icon_notify = 'somenergia_icon_K2f_icon.ico'
+icon_notify = 'somenergia_icon.ico'
 
 # main config
 SLEEP_TIME = 300
