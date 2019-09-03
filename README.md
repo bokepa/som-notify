@@ -8,6 +8,15 @@ som-notify is a little application that notifies you when:
 * New contract is made with Som Energia
 * Some news are updated from wakelet generation plants news.
 
+## Python Requeriments
+
+`pip install plyer`
+`sudo apt-get install libnotify-bin notification-daemon dbus`
+
+## Run
+
+`python get_partners_and_contracts.py`
+
 ## ToDo
 
 - Detect new values on a simple while loop
