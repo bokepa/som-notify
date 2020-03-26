@@ -10,13 +10,14 @@ som-notify is a little application that notifies you when:
 
 ## Python Requeriments
 
+som-notify does notifications throught Plyer module, that works very well with Linux, MacOS and Windows.
+It can be installed with PyPi:
+
 * `pip install plyer`
-* `sudo apt-get install libnotify-bin notification-daemon dbus`
 
 ## Run
 
 * `python get_partners_and_contracts.py`
-
 
 =======
 
