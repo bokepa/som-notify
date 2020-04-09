@@ -1,4 +1,5 @@
 # som-notify
+# Version v0.2
 
 ## Purpose
 
